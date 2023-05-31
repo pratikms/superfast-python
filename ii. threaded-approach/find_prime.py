@@ -8,9 +8,8 @@ MAX_INT = 10000000
 # MAX_INT = 1000000
 CONCURRENCY = 10
 total_prime_numbers = 0
-mutex =threading.Lock()
 
-def check_prime(num):
+def check_prime(num, mutex):
     global total_prime_numbers
 
     if num <= 1:
@@ -24,7 +23,7 @@ def check_prime(num):
     mutex.acquire()
     total_prime_numbers += 1
     mutex.release()
-    end = time.time()
+    # end = time.time()
 
 def thread_check_prime(num):
     global total_prime_numbers
@@ -41,10 +40,10 @@ def thread_check_prime(num):
     total_prime_numbers += 1
     mutex.release()
 
-def do_batch(name, n_start, n_end):
+def do_batch(name, n_start, n_end, mutex):
     start = time.time()
     for i in range(n_start, n_end):
-        check_prime(i)
+        check_prime(i, mutex)
 
     end = time.time()
     print(f"Thread {name} [{n_start, n_end}] completed in { datetime.timedelta(seconds=(end - start)) }")
@@ -57,11 +56,12 @@ if __name__ == "__main__":
     batch_size = int(MAX_INT / CONCURRENCY)
     args_list = []
     threads = []
+    mutex = threading.Lock()
 
     for i in range(CONCURRENCY - 1):
-        args_list.append((i, n_start, n_start + batch_size))
+        args_list.append((i, n_start, n_start + batch_size, mutex))
         n_start += batch_size
-    args_list.append((CONCURRENCY - 1, n_start, MAX_INT))
+    args_list.append((CONCURRENCY - 1, n_start, MAX_INT, mutex))
 
 
     for args in args_list:
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     for thread in threads:
         thread.join()
 
-    print(f"Finished in {time.perf_counter()} seconds")
+    print(f"Finished in {datetime.timedelta(time.perf_counter())} seconds")
 
 
     # print(args_list)

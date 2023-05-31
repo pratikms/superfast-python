@@ -2,9 +2,9 @@ import time
 import math
 import datetime
 
-# MAX_INT = 10000000
+MAX_INT = 10000000
 # MAX_INT = 1000000
-MAX_INT = 1000001
+# MAX_INT = 1000001
 total_prime_numbers = 0
 
 def check_prime(num):
